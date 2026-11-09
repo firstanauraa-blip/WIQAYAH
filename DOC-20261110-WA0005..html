@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wiqayah Jebak Narasi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* layout: satu kolom sempit seperti layar HP; linimasa media sosial sebagai panggung permainan */
+  --paper:#eef2ec; --surface:#ffffff; --ink:#12302a; --muted:#56675f; --line:#d5ded6;
+  --leaf:#1d7558; --leaf-soft:#dcefe5; --accent:#d9971c; --accent-soft:#fbefd4;
+  --danger:#b8432a; --danger-soft:#f8e1da;
+  --display:"Unbounded",system-ui,sans-serif; --body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --arab:"Amiri","Traditional Arabic",serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0d1714; --surface:#15231e; --ink:#e6eee9; --muted:#9db0a7; --line:#28392f;
+  --leaf:#4cc093; --leaf-soft:#173a2d; --accent:#f0b73e; --accent-soft:#3a2e12;
+  --danger:#e47a5f; --danger-soft:#3d1f17; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --paper:#0d1714; --surface:#15231e; --ink:#e6eee9; --muted:#9db0a7; --line:#28392f;
+  --leaf:#4cc093; --leaf-soft:#173a2d; --accent:#f0b73e; --accent-soft:#3a2e12;
+  --danger:#e47a5f; --danger-soft:#3d1f17; color-scheme:dark;}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:540px;margin:0 auto;padding:16px 16px 48px}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:30px;letter-spacing:-.01em}
+h2{font-size:21px}
+h3{font-size:16px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.btn{font:600 15px var(--body);border-radius:12px;padding:13px 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;width:100%}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:focus-visible,.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn:active{transform:scale(.99)}
+.opt{display:block;width:100%;text-align:left;font:500 15px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;line-height:1.45}
+.opt:hover{border-color:var(--leaf)}
+.opt.good{border-color:var(--leaf);background:var(--leaf-soft)}
+.opt.bad{border-color:var(--danger);background:var(--danger-soft)}
+.opt[disabled]{cursor:default}
+.tag{display:inline-block;font:600 12px var(--body);letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--leaf-soft);color:var(--leaf)}
+.tag.gold{background:var(--accent-soft);color:var(--accent)}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:4px 0 16px}
+.steps span{height:6px;border-radius:3px;background:var(--line)}
+.steps span.on{background:var(--leaf)}
+.steps span.now{background:var(--accent)}
+.hero{padding:20px 0 8px}
+.arab{font-family:var(--arab);font-size:56px;line-height:1;color:var(--leaf);direction:rtl}
+.wordmark{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.18em;color:var(--muted)}
+.sebar{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sebar div{border:1.5px solid var(--line);border-radius:12px;padding:10px 4px;text-align:center;background:var(--surface)}
+.sebar b{display:block;font-family:var(--display);font-size:22px;color:var(--muted)}
+.sebar small{display:block;font-size:11px;color:var(--muted);line-height:1.2;margin-top:2px}
+.sebar div.got{border-color:var(--accent);background:var(--accent-soft)}
+.sebar div.got b{color:var(--accent)}
+.phone{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.phone-top{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.ava{width:38px;height:38px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font:700 14px var(--display);color:#1d1503;flex:none}
+.meters{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.meter small{display:block;font-size:12px;color:var(--muted)}
+.meter strong{font:700 20px var(--display);font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--leaf);transition:width .6s ease}
+.mission{padding:14px;border-bottom:1px solid var(--line);background:var(--accent-soft)}
+.feed{padding:14px;display:flex;flex-direction:column;gap:10px}
+.post-art{border-radius:12px;padding:14px;font-weight:600;margin-bottom:6px}
+.bubble{background:var(--leaf-soft);border-radius:4px 16px 16px 16px;padding:12px 14px;max-width:92%}
+.bubble .from{font-size:12px;color:var(--leaf);font-weight:700;margin-bottom:4px}
+.reveal{border-left:4px solid var(--accent);background:var(--surface);border-radius:0 14px 14px 0;padding:14px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.reveal.bad{border-left-color:var(--danger)}
+.dalil{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--leaf-soft);font-size:14px}
+.dalil b{color:var(--leaf)}
+.big{font:700 44px var(--display);font-variant-numeric:tabular-nums;line-height:1}
+.score-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.footer{margin-top:28px;font-size:12px;color:var(--muted);line-height:1.5}
+.pop{animation:pop .45s ease}
+@keyframes pop{0%{transform:translateY(6px)}100%{transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}.bar i{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap" id="app" aria-live="polite"></main>
+<script>
+const SEBAR=[
+ {k:"S",n:"Simbol & estetika"},{k:"E",n:"Eufemisme"},{k:"B",n:"Baper"},{k:"A",n:"Arus mayoritas"},{k:"R",n:"Rangkap palsu"}];
+const TECH={S:"Simbol & estetika",E:"Eufemisme",B:"Baper (emosi)",A:"Arus mayoritas",R:"Rangkap palsu"};
+
+const PRE=[
+ {t:"Bukan judi kok, cuma “investasi seru” di slot. Santai aja.",a:"E"},
+ {t:"Semua anak kelas sudah pakai vape. Tinggal kamu yang belum.",a:"A"},
+ {t:"Kalau kamu nggak ikut bolos bareng, berarti kamu nggak setia kawan.",a:"R"},
+ {t:"Dia sampai menangis gara-gara dilarang. Tega banget yang melarang.",a:"B"},
+ {t:"Filter pastel, musik lo-fi, caption “healing mode”, padahal isinya pesta minuman keras.",a:"S"}];
+const POST=[
+ {t:"Jutaan orang sudah pakai aplikasi pinjaman ini. Masa kamu belum?",a:"A"},
+ {t:"Maskot imut dan logo warna-warni untuk merek rokok elektrik yang menyasar pelajar.",a:"S"},
+ {t:"Ini bukan nyontek, namanya “kerja sama strategis”.",a:"E"},
+ {t:"Pilih saja: dukung tren ini, atau kamu memang kolot.",a:"R"},
+ {t:"Bayangkan perasaannya kalau kamu menolak. Dia cuma ingin bahagia.",a:"B"}];
+
+const LEVELS=[
+ {k:"S",mission:"Peluncuran kampanye. Pilih unggahan pertama yang paling cepat menyebar.",
+  opts:[
+   {txt:"Teks polos: “Mencontek saat ujian itu boleh.”",art:null,win:false},
+   {txt:"Poster pastel, maskot burung hantu lucu, musik lo-fi, tagar #ContekBareng.",art:"pastel",win:true},
+   {txt:"Artikel 2.000 kata tentang sejarah sistem ujian.",art:null,win:false}],
+  how:"Pesannya belum berubah sedikit pun, tetapi bungkusnya membuat hal yang salah terasa ringan, lucu, dan akrab. Makin sering dilihat, makin terasa biasa.",
+  transfer:"Dalam isu normalisasi penyimpangan seksual, trik ini muncul sebagai simbol warna-warni dan konten estetik yang membuat persoalan nilai terasa sekadar gaya hidup.",
+  dalil:"<b>HR. al-Bukhārī no. 6069:</b> seluruh umat dimaafkan kecuali orang yang terang-terangan memamerkan dosanya. Islam membedakan kesalahan yang ditutupi dari kesalahan yang dirayakan di ruang publik."},
+ {k:"E",mission:"Kata “mencontek” terdengar buruk. Ganti namanya supaya orang nyaman ikut.",
+  opts:[
+   {txt:"Tetap pakai “mencontek massal”.",win:false},
+   {txt:"Sebut saja “kolaborasi ujian”.",win:true},
+   {txt:"Sebut apa adanya: “kecurangan”.",win:false}],
+  how:"Istilah moral diganti istilah netral atau positif. Perbuatannya sama persis, tetapi bobot moralnya hilang dari pikiran pembaca.",
+  transfer:"Dalam isu yang sedang ramai, trik ini muncul ketika istilah moral diganti istilah netral sehingga perbuatan kehilangan bobot penilaiannya.",
+  dalil:"<b>QS al-Aʿrāf: 80:</b> Al-Qur’an menyebut perbuatan kaum Nabi Luth dengan nama moralnya, <i>fāḥisyah</i>. Mengganti nama tidak mengubah hakikat perbuatan."},
+ {k:"B",mission:"Ada yang mulai mengkritik. Bungkam kritiknya dengan cara paling ampuh.",
+  opts:[
+   {txt:"Tampilkan grafik nilai rata-rata sekolah.",win:false},
+   {txt:"Kisah Rani yang hampir putus sekolah karena nilai jeblok, diiringi musik sedih: “#ContekBareng menyelamatkan masa depannya.”",win:true},
+   {txt:"Kutip pasal tata tertib sekolah.",win:false}],
+  how:"Kisah menyentuh dipakai untuk mematikan nalar. Siapa pun yang bertanya “apakah perbuatannya benar?” langsung terlihat kejam.",
+  transfer:"Dalam isu yang sedang ramai, kisah personal yang menyentuh sering dipakai untuk menutup diskusi tentang benar atau salahnya sebuah perbuatan.",
+  dalil:"<b>QS Ṣād: 26:</b> putuskanlah perkara dengan kebenaran dan jangan mengikuti hawa nafsu. Empati itu mulia, tetapi emosi bukan dalil."},
+ {k:"A",mission:"Banyak yang masih ragu ikut. Buat mereka merasa ketinggalan.",
+  opts:[
+   {txt:"“Sebagian kecil siswa sudah mencoba.”",win:false},
+   {txt:"“9 dari 10 siswa sudah ikut. Kamu mau jadi satu-satunya yang ketinggalan?”",win:true},
+   {txt:"“Belum ada data berapa yang ikut.”",win:false}],
+  how:"Klaim mayoritas, sering tanpa sumber, membuat orang menilai benar-salah dari jumlah pengikut, bukan dari isi perbuatannya.",
+  transfer:"Dalam isu yang sedang ramai, trik ini muncul sebagai klaim “dunia sudah menerima” atau “semua orang sudah biasa” tanpa data.",
+  dalil:"<b>QS al-Anʿām: 116:</b> jika kamu mengikuti kebanyakan orang di bumi, niscaya mereka menyesatkanmu. Jumlah bukan ukuran kebenaran."},
+ {k:"R",mission:"Masih ada yang menolak. Paksa mereka memilih kubu.",
+  opts:[
+   {txt:"“Ada yang setuju, ada yang tidak. Yuk diskusi baik-baik.”",win:false},
+   {txt:"“Dukung #ContekBareng, atau kamu siswa egois yang tidak peduli teman.”",win:true},
+   {txt:"“Kami netral saja.”",win:false}],
+  how:"Pilihan dipaksa jadi dua: mendukung atau jahat. Padahal ada pilihan ketiga yang paling benar: menolak perbuatannya sambil tetap peduli pada orangnya.",
+  transfer:"Dalam isu yang sedang ramai, pilihan sering dipaksa menjadi “mendukung atau membenci”, seolah tidak ada sikap tegas yang tetap santun.",
+  dalil:"<b>QS asy-Syuʿarā’: 168:</b> Nabi Luth berkata, “Aku sungguh membenci <i>perbuatanmu</i>.” Yang ditolak perbuatannya, bukan manusianya."}
+];
+
+const CASES=[
+ {from:"Pesan diteruskan berkali-kali",msg:"INFO PENTING!! Di sekolah sebelah ada geng penyimpangan, ini foto tiga anaknya. Sebarkan biar viral dan mereka kapok!",
+  q:[
+   {ask:"Langkah 1 · Sumber: siapa yang mengirim pertama kali?",o:["Jelas, ada nama dan lembaga yang bertanggung jawab","Tidak jelas, hanya pesan terusan tanpa identitas"],a:1},
+   {ask:"Langkah 2 · Bukti: apa buktinya?",o:["Hanya foto tanpa konteks dan tuduhan","Dokumen resmi yang bisa dicek"],a:0},
+   {ask:"Langkah 3 · Dampak: apa yang terjadi kalau kamu ikut menyebarkan?",o:["Mereka jadi sadar dan berubah","Fitnah, perundungan, dan aib orang terbuka, padahal belum tentu benar"],a:1}],
+  act:{o:["Sebarkan ke semua grup","Jangan sebarkan. Kalau ada kekhawatiran nyata, sampaikan ke guru atau pihak sekolah","Kirim ke akun gosip"],a:1},
+  lesson:"Menyebarkan foto dan tuduhan tanpa bukti adalah fitnah dan membuka aib. Islam melarang memata-matai dan berprasangka (QS al-Ḥujurāt: 12).",
+  dalil:"<b>QS al-Ḥujurāt: 6:</b> jika datang kabar dari orang yang tidak jelas, telitilah dahulu agar kamu tidak mencelakakan suatu kaum tanpa mengetahui keadaannya."},
+ {from:"Dua video viral · aksi di Monas, 7 November 2026",msg:"Versi A: seorang pengemudi ojol menurunkan bendera pelangi. Versi B (pernyataan panitia): tiga orang tak dikenal merampas bendera secara paksa, dan ada peserta yang terluka.",
+  q:[
+   {ask:"Langkah 1 · Sumber: apakah kedua versi berasal dari pihak yang netral?",o:["Ya, keduanya pasti netral","Belum tentu. Setiap versi datang dari pihak yang punya kepentingan"],a:1},
+   {ask:"Langkah 2 · Bukti: sudah adakah kesimpulan resmi?",o:["Kronologinya masih simpang siur","Sudah pasti versi yang paling sering dibagikan"],a:0},
+   {ask:"Langkah 3 · Dampak: apa risikonya kalau kamu menyebarkan salah satu versi sambil memaki pihak lain?",o:["Tidak ada, cuma unggahan","Memperkeruh suasana dan bisa memicu kekerasan"],a:1}],
+  act:{o:["Pilih versi yang sesuai pendapatku, lalu sebarkan","Tahan dulu, tunggu keterangan resmi dari aparat dan media kredibel, dan jangan ikut memprovokasi","Ikut menyerukan aksi balasan"],a:1},
+  lesson:"Menolak normalisasi tidak membenarkan kekerasan. Dalam kasus ini MUI menegaskan penolakan terhadap LGBT, sekaligus mengimbau umat menahan diri dan tidak terprovokasi.",
+  dalil:"<b>QS al-Isrā’: 36:</b> janganlah kamu mengikuti sesuatu yang tidak kamu ketahui ilmunya. Tabayun berlaku untuk kabar dari pihak mana pun."},
+ {from:"Akun meme @faktaviral",msg:"SURVEI: 90% remaja Indonesia sudah menganggap penyimpangan seksual itu normal! (tanpa tautan sumber)",
+  q:[
+   {ask:"Langkah 1 · Sumber: siapa yang melakukan survei?",o:["Tidak disebutkan sama sekali","Lembaga survei resmi dengan metode jelas"],a:0},
+   {ask:"Langkah 2 · Bukti: trik SEBAR apa yang dipakai?",o:["Eufemisme","Arus mayoritas: klaim angka besar tanpa data"],a:1},
+   {ask:"Langkah 3 · Dampak: kalau klaim ini dipercaya, apa akibatnya?",o:["Orang merasa “semua sudah biasa” lalu ikut menganggapnya wajar","Tidak berpengaruh apa-apa"],a:0}],
+  act:{o:["Bagikan, angkanya mengejutkan","Minta sumbernya, dan jangan sebarkan klaim tanpa data","Bikin tandingan dengan angka karangan sendiri"],a:1},
+  lesson:"Klaim mayoritas tanpa sumber adalah trik arus mayoritas. Membalasnya dengan angka karangan sendiri sama salahnya.",
+  dalil:"<b>HR. Muslim (Muqaddimah):</b> cukuplah seseorang dianggap berdusta bila ia menceritakan semua yang ia dengar."},
+ {from:"Kanal resmi Kementerian Komdigi",msg:"PP Tunas berlaku penuh 28 Maret 2026. Platform wajib menunda akses media sosial berisiko tinggi bagi anak di bawah 16 tahun.",
+  q:[
+   {ask:"Langkah 1 · Sumber: siapa yang menyampaikan?",o:["Lembaga resmi pemerintah","Akun anonim"],a:0},
+   {ask:"Langkah 2 · Bukti: bisa dicek di mana?",o:["Tidak bisa dicek","Teks peraturannya terbit dan diberitakan media kredibel"],a:1},
+   {ask:"Langkah 3 · Dampak: kalau disebarkan dengan sumbernya?",o:["Membantu orang tua melindungi anak","Menimbulkan fitnah"],a:0}],
+  act:{o:["Abaikan, semua berita pasti hoaks","Sebarkan beserta tautan sumber resminya","Ubah isinya supaya lebih heboh"],a:1},
+  lesson:"Tabayun bukan curiga pada semua hal. Kabar yang sumber, bukti, dan dampaknya jelas boleh dan bahkan baik untuk disebarkan.",
+  dalil:"<b>QS al-Ḥujurāt: 6</b> memerintahkan meneliti, bukan menolak semua kabar. Sikap adil berarti menerima yang terbukti benar."}
+];
+
+const SIKAP=[
+ {sit:"Teman sekelas membagikan video estetik berlatar warna pelangi ke grup kelas dengan caption: “Cinta itu tidak pernah salah, siapa pun orangnya.”",
+  o:[
+   {t:"Membalas di grup dengan hujatan, lalu menyebar foto pribadinya.",good:false,why:"Ini melanggar larangan mengolok-olok dan memata-matai (QS al-Ḥujurāt: 11–12). Kebenaran tidak dibela dengan cara yang zalim."},
+   {t:"Diam, lalu ikut memberi like supaya tidak dibilang tidak toleran.",good:false,why:"Ini jebakan rangkap palsu: seolah pilihannya hanya mendukung atau membenci."},
+   {t:"Mengajak bicara secara pribadi, menunjukkan trik narasi di video itu, dan menyampaikan sikap Islam dengan santun.",good:true,why:"Tegas pada nilai, santun pada orang. Inilah dakwah dengan hikmah dan pelajaran yang baik (QS an-Naḥl: 125)."}]},
+ {sit:"Sahabatmu curhat diam-diam bahwa ia sedang bergulat dengan perasaannya sendiri dan merasa takut.",
+  o:[
+   {t:"Menceritakannya ke teman lain supaya ia “diawasi”.",good:false,why:"Itu membuka aib orang yang sedang mencari pertolongan, dan bisa membuatnya semakin menjauh."},
+   {t:"Langsung menjauhinya.",good:false,why:"Menjauh justru membuatnya sendirian di saat paling rentan."},
+   {t:"Menjaga rahasianya, mendengarkan, menguatkan imannya, dan mendorongnya bicara dengan guru BK atau ustaz yang ia percaya.",good:true,why:"Menutup aib saudara adalah akhlak mulia, dan pendampingan orang dewasa yang tepercaya lebih menolong daripada penghakiman."}]},
+ {sit:"Grup WhatsApp kampung mengajak “sweeping” ke sebuah kos yang dicurigai, berdasarkan kabar burung.",
+  o:[
+   {t:"Ikut berangkat, biar ramai.",good:false,why:"Main hakim sendiri adalah kezaliman dan pelanggaran hukum, apalagi berdasar kabar yang belum diteliti."},
+   {t:"Membagikan lokasi kos itu ke grup lain.",good:false,why:"Ini menyebar kabar yang belum jelas dan bisa memicu kekerasan terhadap orang yang belum tentu bersalah."},
+   {t:"Menolak ikut, mengingatkan bahwa penegakan hukum adalah wewenang aparat, dan menyarankan melapor ke pihak berwenang jika ada pelanggaran nyata.",good:true,why:"Tabayun dulu (QS al-Ḥujurāt: 6). Ulama menjelaskan bahwa mengubah kemungkaran “dengan tangan” adalah ranah pemilik wewenang (HR. Muslim no. 49)."}]}
+];
+
+const PHASES=["pre","jebak","tabayun","sikap","post"];
+let S;
+function fresh(){return {screen:"home",pre:[],post:[],qi:0,lv:0,picked:null,badges:[],followers:120,cred:40,ci:0,cq:0,cAns:[],cScore:0,si:0,sPick:null,sScore:0,lvWins:0};}
+function start(d){S=(d&&d.screen)?d:fresh();render();}
+window.claude?.hot?.snapshot?.(()=>S);
+function set(p){Object.assign(S,p);render();window.scrollTo({top:0,behavior:"smooth"});}
+const $=h=>{document.getElementById("app").innerHTML=h;};
+function steps(cur){const i=cur==="done"?PHASES.length:PHASES.indexOf(cur);return `<div class="steps" aria-hidden="true">${PHASES.map((p,j)=>`<span class="${j<i?"on":j===i?"now":""}"></span>`).join("")}</div>`;}
+function sebarStrip(){return `<div class="sebar">${SEBAR.map(x=>`<div class="${S.badges.includes(x.k)?"got":""}"><b>${x.k}</b><small>${x.n}</small></div>`).join("")}</div>`;}
+function fmt(n){return new Intl.NumberFormat("id-ID").format(Math.round(n));}
+
+function render(){({home,quiz,jebak,tabayun,sikap,result})[S.screen]();}
+
+function home(){
+ $(`<section class="hero stack pop">
+   <div class="row" style="justify-content:space-between"><span class="wordmark">WIQĀYAH</span><span class="arab" lang="ar">وِقَايَة</span></div>
+   <h1>Jebak Narasi</h1>
+   <p class="muted">Vaksin pikiran untuk remaja Muslim. Kenali dulu triknya dari dalam, maka kamu tidak mudah terseret saat menemukannya di media sosial.</p>
+  </section>
+  <div class="stack" style="margin-top:12px">
+   <div class="card stack">
+    <span class="tag gold">Lima trik yang akan kamu pelajari</span>
+    ${sebarStrip()}
+   </div>
+   <div class="card stack">
+    <h3>Alur permainan · ± 15 menit</h3>
+    <div class="stack small">
+     <div class="row"><span class="tag">Tes awal</span><span>Seberapa kebal kamu sekarang?</span></div>
+     <div class="row"><span class="tag">Babak 1 · Jebak</span><span>Jadi admin akun yang menormalisasi tren fiktif</span></div>
+     <div class="row"><span class="tag">Babak 2 · Tabayun</span><span>Teliti kabar dengan tiga langkah</span></div>
+     <div class="row"><span class="tag">Babak 3 · Sikap</span><span>Tegas pada nilai, santun pada orang</span></div>
+     <div class="row"><span class="tag">Tes akhir</span><span>Lihat peningkatan imunitasmu</span></div>
+    </div>
+   </div>
+   <button class="btn" onclick="set({screen:'quiz',qi:0,pre:[]})">Mulai tes awal</button>
+   <p class="footer">Prototipe esai WIQĀYAH, AWF 2026. Dirancang berdasarkan teori inokulasi (McGuire, 1961; Roozenbeek &amp; van der Linden, 2019), perintah tabayun (QS al-Ḥujurāt: 6), dan sikap Nabi Luth (QS asy-Syuʿarā’: 168). Semua kasus di Babak 1 adalah fiktif.</p>
+  </div>`);
+}
+
+function quiz(){
+ const isPost=S.pre.length===5; const bank=isPost?POST:PRE; const item=bank[S.qi];
+ const phase=isPost?"post":"pre";
+ $(`${steps(phase)}<div class="stack pop">
+  <span class="tag ${isPost?"gold":""}">${isPost?"Tes akhir":"Tes awal"} · ${S.qi+1}/5</span>
+  <h2>Trik apa yang dipakai unggahan ini?</h2>
+  <div class="bubble"><div class="from">Unggahan di linimasa</div>${item.t}</div>
+  <div class="stack">${SEBAR.map(x=>`<button class="opt" onclick="answerQuiz('${x.k}')"><b>${x.k}</b> · ${TECH[x.k]}</button>`).join("")}</div>
+  <p class="small muted">Jawabanmu baru dinilai di akhir permainan.</p></div>`);
+}
+function answerQuiz(k){
+ const isPost=S.pre.length===5; const arr=isPost?S.post:S.pre; arr.push(k);
+ if(S.qi<4){set({qi:S.qi+1});}
+ else if(!isPost){set({screen:"jebak",lv:0,picked:null,qi:0});}
+ else{set({screen:"result"});}
+}
+
+function jebak(){
+ const L=LEVELS[S.lv]; const credPct=Math.min(100,S.cred);
+ const picked=S.picked;
+ const optsHtml=L.opts.map((o,i)=>{
+   let cls="opt"; if(picked!==null){ if(o.win) cls+=" good"; else if(i===picked) cls+=" bad";}
+   const art=o.art==="pastel"?`<div class="post-art" style="background:#f6d9e6;color:#5b2340">#ContekBareng · maskot burung hantu · ♪ lo-fi</div>`:"";
+   return `<button class="${cls}" ${picked!==null?"disabled":""} onclick="pickLevel(${i})">${art}${o.txt}</button>`;}).join("");
+ let reveal="";
+ if(picked!==null){
+  const win=L.opts[picked].win;
+  reveal=`<div class="reveal ${win?"":"bad"} pop stack">
+   <div class="row"><span class="tag gold">Lencana ${L.k} · ${TECH[L.k]}</span></div>
+   <p>${win?"Viral! Kamu baru saja memakai trik ini.":"Kurang viral. Trik yang lebih ampuh ada di pilihan yang ditandai hijau."}</p>
+   <p><b>Cara kerjanya:</b> ${L.how}</p>
+   <p class="muted"><b>Di dunia nyata:</b> ${L.transfer}</p>
+   <div class="dalil">${L.dalil}</div>
+   <button class="btn" onclick="nextLevel()">${S.lv<4?"Lanjut ke misi berikutnya":"Selesai, lanjut ke Babak 2"}</button></div>`;
+ }
+ $(`${steps("jebak")}<div class="stack">
+  <div class="row" style="justify-content:space-between"><span class="tag">Babak 1 · Jebak · Misi ${S.lv+1}/5</span></div>
+  <p class="small muted">Peranmu: admin akun yang ingin membuat tren fiktif #ContekBareng (mencontek massal saat ujian) terlihat wajar. Dengan memainkan perannya, kamu belajar mengenali triknya.</p>
+  <div class="phone">
+   <div class="phone-top"><div class="ava">KK</div><div><b>@kontenkilat</b><div class="small muted">Akun pembuat tren</div></div></div>
+   <div class="meters">
+    <div class="meter"><small>Pengikut</small><strong>${fmt(S.followers)}</strong></div>
+    <div class="meter"><small>Kesan meyakinkan</small><strong>${Math.round(credPct)}%</strong><div class="bar"><i style="width:${credPct}%"></i></div></div>
+   </div>
+   <div class="mission"><b>Misi:</b> ${L.mission}</div>
+   <div class="feed">${optsHtml}</div>
+  </div>
+  ${reveal}
+  ${sebarStrip()}
+ </div>`);
+}
+function pickLevel(i){
+ const L=LEVELS[S.lv]; const win=L.opts[i].win;
+ const badges=S.badges.includes(L.k)?S.badges:[...S.badges,L.k];
+ set({picked:i,badges,followers:S.followers*(win?3.4:1.25)+(win?850:40),cred:Math.min(100,S.cred+(win?12:2)),lvWins:S.lvWins+(win?1:0)});
+}
+function nextLevel(){ if(S.lv<4) set({lv:S.lv+1,picked:null}); else set({screen:"tabayun",ci:0,cq:0,cAns:[]}); }
+
+function tabayun(){
+ const C=CASES[S.ci]; const done=S.cAns.length;
+ const qs=C.q.map((q,qi)=>{
+   if(qi>done) return "";
+   const ans=S.cAns[qi];
+   return `<div class="card stack"><b class="small">${q.ask}</b>${q.o.map((o,oi)=>{
+     let cls="opt"; if(ans!==undefined){ if(oi===q.a) cls+=" good"; else if(oi===ans) cls+=" bad";}
+     return `<button class="${cls}" ${ans!==undefined?"disabled":""} onclick="answerStep(${qi},${oi})">${o}</button>`;}).join("")}</div>`;}).join("");
+ let actHtml="";
+ if(done>=3){
+  const ans=S.cAns[3];
+  actHtml=`<div class="card stack"><b class="small">Keputusan: apa yang kamu lakukan?</b>${C.act.o.map((o,oi)=>{
+   let cls="opt"; if(ans!==undefined){ if(oi===C.act.a) cls+=" good"; else if(oi===ans) cls+=" bad";}
+   return `<button class="${cls}" ${ans!==undefined?"disabled":""} onclick="answerStep(3,${oi})">${o}</button>`;}).join("")}</div>`;
+  if(ans!==undefined){
+   actHtml+=`<div class="reveal ${ans===C.act.a?"":"bad"} pop stack"><p>${C.lesson}</p><div class="dalil">${C.dalil}</div>
+   <button class="btn" onclick="nextCase()">${S.ci<3?"Kabar berikutnya":"Selesai, lanjut ke Babak 3"}</button></div>`;}
+ }
+ $(`${steps("tabayun")}<div class="stack">
+  <span class="tag">Babak 2 · Tabayun · Kabar ${S.ci+1}/4</span>
+  <h2>Teliti dulu, baru bersikap</h2>
+  <div class="phone"><div class="feed"><div class="bubble"><div class="from">${C.from}</div>${C.msg}</div></div></div>
+  ${qs}${actHtml}
+ </div>`);
+}
+function answerStep(qi,oi){
+ const C=CASES[S.ci]; const correct=qi<3?C.q[qi].a===oi:C.act.a===oi;
+ const cAns=[...S.cAns]; cAns[qi]=oi;
+ S.cAns=cAns; S.cScore+=correct?1:0; render();
+}
+function nextCase(){ if(S.ci<3) set({ci:S.ci+1,cAns:[]}); else set({screen:"sikap",si:0,sPick:null}); }
+
+function sikap(){
+ const X=SIKAP[S.si]; const p=S.sPick;
+ $(`${steps("sikap")}<div class="stack">
+  <span class="tag">Babak 3 · Sikap · Situasi ${S.si+1}/3</span>
+  <h2>Tegas pada nilai, santun pada orang</h2>
+  <div class="card"><p>${X.sit}</p></div>
+  <div class="stack">${X.o.map((o,i)=>{let cls="opt"; if(p!==null){ if(o.good) cls+=" good"; else if(i===p) cls+=" bad";}
+    return `<button class="${cls}" ${p!==null?"disabled":""} onclick="pickSikap(${i})">${o.t}</button>`;}).join("")}</div>
+  ${p!==null?`<div class="reveal ${X.o[p].good?"":"bad"} pop stack"><p>${X.o[p].why}</p>${X.o[p].good?"":`<p class="muted small">Sikap terbaik: ${X.o.find(o=>o.good).why}</p>`}
+   <button class="btn" onclick="nextSikap()">${S.si<2?"Situasi berikutnya":"Lanjut ke tes akhir"}</button></div>`:""}
+ </div>`);
+}
+function pickSikap(i){ set({sPick:i,sScore:S.sScore+(SIKAP[S.si].o[i].good?1:0)}); }
+function nextSikap(){ if(S.si<2) set({si:S.si+1,sPick:null}); else set({screen:"quiz",qi:0}); }
+
+function result(){
+ const pre=S.pre.filter((k,i)=>k===PRE[i].a).length;
+ const post=S.post.filter((k,i)=>k===POST[i].a).length;
+ const diff=post-pre;
+ const imun=Math.round(((post/5)*0.5+(S.cScore/16)*0.3+(S.sScore/3)*0.2)*100);
+ const verdict=imun>=80?"Kebal kuat":imun>=60?"Cukup kebal":"Perlu dosis penguat";
+ const rows=POST.map((x,i)=>`<div class="row small" style="justify-content:space-between;border-top:1px solid var(--line);padding-top:8px"><span style="flex:1;min-width:0">${x.t}</span><span class="tag ${S.post[i]===x.a?"":"gold"}">${S.post[i]===x.a?"Tepat":"Jawaban: "+x.a}</span></div>`).join("");
+ $(`${steps("done")}<div class="stack pop">
+  <span class="tag gold">Hasil imunitas</span>
+  <h1>${verdict}</h1>
+  <div class="card stack"><small class="muted">Skor imunitas WIQĀYAH</small><div class="big">${imun}<span style="font-size:20px">/100</span></div><div class="bar"><i style="width:${imun}%"></i></div></div>
+  <div class="score-row">
+   <div class="card"><small class="muted">Tes awal</small><div class="big">${pre}/5</div></div>
+   <div class="card"><small class="muted">Tes akhir</small><div class="big">${post}/5</div><small class="${diff>=0?"":"muted"}" style="color:${diff>0?"var(--leaf)":"var(--muted)"}">${diff>0?"Naik "+diff+" poin":diff===0?"Tetap":"Turun "+Math.abs(diff)+" poin"}</small></div>
+  </div>
+  <div class="score-row">
+   <div class="card"><small class="muted">Langkah tabayun tepat</small><div class="big" style="font-size:30px">${S.cScore}/16</div></div>
+   <div class="card"><small class="muted">Sikap tepat</small><div class="big" style="font-size:30px">${S.sScore}/3</div></div>
+  </div>
+  <div class="card stack"><h3>Pembahasan tes akhir</h3>${rows}</div>
+  <div class="card stack"><h3>Kartu saku SEBAR milikmu</h3>${sebarStrip()}
+   <p class="small"><b>3 langkah tabayun:</b> siapa sumbernya, apa buktinya, apa dampaknya jika disebar.</p>
+   <p class="small"><b>Pegangan sikap:</b> “Aku membenci perbuatanmu” (QS asy-Syuʿarā’: 168). Tolak perbuatannya, jaga martabat manusianya.</p></div>
+  <button class="btn" onclick="set(fresh())">Main lagi</button>
+  <p class="footer">Efek inokulasi bisa memudar seiring waktu, jadi ulangi permainan ini atau tonton episode “Vaksin 60 Detik” sebagai dosis penguat.</p>
+ </div>`);
+}
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+</script>
+</body>
+</html>
